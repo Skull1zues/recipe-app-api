@@ -13,9 +13,11 @@ CREATE_USER_URL = reverse('user:create')
 TOKEN_URL = reverse('user:token')
 ME_URL = reverse('user:me')
 
+
 def create_user(**params):
     """Create and return a new user"""
     return get_user_model().objects.create_user(**params)
+
 
 class PublicUserApiTests(TestCase):
     """Test the public features of the user API"""
@@ -26,23 +28,23 @@ class PublicUserApiTests(TestCase):
     def test_create_user_success(self):
         """Test creating a user is successful."""
         payload = {
-            'email':'test@example.com',
-            'password':'testpass123',
-            'name':'Test Name',
+            'email': 'test@example.com',
+            'password': 'testpass123',
+            'name': 'Test Name',
         }
         res = self.client.post(CREATE_USER_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        user = get_user_model().objects.get(email= payload['email'])
+        user = get_user_model().objects.get(email=payload['email'])
         self.assertTrue(user.check_password(payload['password']))
         self.assertNotIn('password', res.data)
 
     def test_user_with_email_exists_error(self):
         """Tesr error retured if user with email exists."""
         payload = {
-            'email':'test@example.com',
-            'password':'testpass123',
-            'name':'Test Name',
+            'email': 'test@example.com',
+            'password': 'testpass123',
+            'name': 'Test Name',
         }
 
         create_user(**payload)
@@ -81,17 +83,17 @@ class PublicUserApiTests(TestCase):
 
         self.assertIn('token', res.data)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-    
+
     def test_create_token_bad_credentials(self):
         """Test that token is not created with invalid credentials"""
-        create_user(email= 'test@example.com',password= 'goodpass')
+        create_user(email='test@example.com', password='goodpass')
 
         payload = {
             'email': 'test@example.com',
             'password': 'badpass'
         }
 
-        res = self.client.post(TOKEN_URL,payload)
+        res = self.client.post(TOKEN_URL, payload)
         self.assertNotIn('token', res.data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -102,7 +104,7 @@ class PublicUserApiTests(TestCase):
             'password': ''
         }
 
-        res = self.client.post(TOKEN_URL,payload)
+        res = self.client.post(TOKEN_URL, payload)
         self.assertNotIn('token', res.data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -152,8 +154,4 @@ class PrivateUserAPITests(TestCase):
         self.user.refresh_from_db()
         self.assertEqual(self.user.name, payload['name'])
         self.assertTrue(self.user.check_password(payload['password']))
-        self.assertEqual(res.status_code,status.HTTP_200_OK)
-
-
-
-
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
