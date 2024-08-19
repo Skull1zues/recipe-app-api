@@ -18,12 +18,12 @@ from recipe.serializers import (
     )
 
 
-RECIPE_URL = reverse('recipe:recipe-list')
+RECIPE_URL = reverse('recipes:recipe-list')
 
 
 def detail_url(recipe_id):
     """create and retuen a recipe details URL."""
-    return reverse('recipe:recipe-detail', args=[recipe_id])
+    return reverse('recipes:recipe-detail', args=[recipe_id])
 
 
 def create_recipe(user, **params):
@@ -100,5 +100,19 @@ class PrivateRecipeApiTest(TestCase):
         res = self.client.get(url)
 
         serializer = RecipeDetailsSerializer(recipe)
-
         self.assertEqual(res.data, serializer.data)
+
+    def test_create_recipe(self):
+        """Test creating a new recipe"""
+        payload = {
+            'title': 'Test Recipe',
+            'time_minutes': 10,
+            'price': Decimal('5.99'),
+        }
+        res = self.client.post(RECIPE_URL, payload)  # /api/recipes/recipe
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        recipe = Recipe.objects.get(id=res.data['id'])
+        for k, v in payload.items():
+            self.assertEqual(v, getattr(recipe, k))
+        self.assertEqual(recipe.user, self.user)

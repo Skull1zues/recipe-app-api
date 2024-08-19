@@ -11,7 +11,7 @@ from recipe import views
 router = DefaultRouter()
 router.register('recipe', views.RecipeViewSet)
 
-app_name = 'recipe'
+app_name = 'recipes'
 
 urlpatterns = [
     path('', include(router.urls)),
