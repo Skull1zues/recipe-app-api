@@ -3,7 +3,25 @@ Serializer for recipe API
 """
 from rest_framework import serializers
 
-from core.models import Recipe, Tag
+from core.models import (
+    Recipe,
+    Tag,
+    Ingredient,
+)
+
+
+class IngredientSerializer(serializers.ModelSerializer):
+    """Serializer for ingredient object"""
+
+    class Meta:
+        model = Ingredient
+        fields = ['id', 'name']
+        read_only_field = ['id',]
+
+    def create(self, validated_data):
+        """Create and return a new ingredient"""
+        auth_user = self.context['request'].user
+        return Ingredient.objects.create(user=auth_user, **validated_data)
 
 
 class TagSerializer(serializers.ModelSerializer):
