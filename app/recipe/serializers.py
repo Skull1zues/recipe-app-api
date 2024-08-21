@@ -35,11 +35,14 @@ class TagSerializer(serializers.ModelSerializer):
 
 class RecipeSerializer(serializers.ModelSerializer):
     """Serializer for recipe object"""
+
     tags = TagSerializer(many=True, required=False)
+    ingredient = IngredientSerializer(many=True, required=False)
 
     class Meta:
         model = Recipe
-        fields = ['id', 'title', 'time_minutes', 'price', 'link', 'tags']
+        fields = ['id', 'title', 'time_minutes', 'price', 'link',
+                  'tags', 'ingredient',]
         read_only_fields = ['id']
 
     def _get_or_create_tags(self, tags, recipe):
@@ -52,20 +55,37 @@ class RecipeSerializer(serializers.ModelSerializer):
             )
             recipe.tags.add(tag_obj)
 
+    def _get_or_create_ingredient(self, ingredients, recipe):
+        """Handle getting or creating ingredient as needed"""
+        auth_user = self.context['request'].user
+        for ingredient in ingredients:
+            ingredient_obj, created = Ingredient.objects.get_or_create(
+                user=auth_user,
+                **ingredient
+            )
+            recipe.ingredient.add(ingredient_obj)
+
     def create(self, validated_data):
         """Create a recipe"""
         tags = validated_data.pop('tags', [])
+        ingredient = validated_data.pop('ingredient', [])
         recipe = Recipe.objects.create(**validated_data)
         self._get_or_create_tags(tags, recipe)
+        self._get_or_create_ingredient(ingredient, recipe)
 
         return recipe
 
     def update(self, instance: Recipe, validated_data):
         """Update a recipe"""
         tags = validated_data.pop('tags', [])
+        ingredient = validated_data.pop('ingredient', [])
         if tags is not None:
             instance.tags.clear()
             self._get_or_create_tags(tags, instance)
+
+        if ingredient is not None:
+            instance.ingredient.clear()
+            self._get_or_create_ingredient(ingredient, instance)
 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
