@@ -27,7 +27,7 @@ adduser \
 --no-create-home \
 django-user && \
 mkdir -p /vol/web/media && \
-chown -R django_user:django_user /vol && \
+chown -R django-user:django-user /vol && \
 chmod -R 755 /vol
 
 ENV PATH="/py/bin:$PATH"
