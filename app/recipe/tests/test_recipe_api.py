@@ -3,6 +3,11 @@ Test for recipe PI
 """
 
 from decimal import Decimal
+import tempfile
+import os
+
+from PIL import Image
+
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -29,6 +34,9 @@ def detail_url(recipe_id):
     """create and retuen a recipe details URL."""
     return reverse('recipes:recipe-detail', args=[recipe_id])
 
+def image_upload_url(recipe_id):
+    """create and return a recipe image upload URL."""
+    return reverse('recipes:recipe-upload-image', args=[recipe_id])
 
 def create_recipe(user, **params):
     """Create and return a sample recipe"""
