@@ -119,7 +119,8 @@ class PrivateIngredentsApiTest(TestCase):
         self.assertNotIn(s2.data, res.data)
 
     def test_filtered_ingredients_unique(self):
-        """Test filtering ingredients by assigned recipe returns unique items"""
+        """Test filtering ingredients by
+        assigned recipe returns unique items"""
         in1 = Ingredient.objects.create(user=self.user, name="rice")
         Ingredient.objects.create(user=self.user, name="dal")
         recipe1 = Recipe.objects.create(
@@ -127,8 +128,8 @@ class PrivateIngredentsApiTest(TestCase):
             time_minutes=10,
             price=Decimal('4.99'),
             user=self.user,
-            )
-        recipe2 =Recipe.objects.create(
+        )
+        recipe2 = Recipe.objects.create(
             title="test2",
             time_minutes=10,
             price=Decimal(9.99),
@@ -140,4 +141,3 @@ class PrivateIngredentsApiTest(TestCase):
         res = self.client.get(INGREDIENT_URL, {'assigned_only': 1})
 
         self.assertEqual(len(res.data), 1)
-

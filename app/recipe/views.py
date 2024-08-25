@@ -105,8 +105,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             enum=[0, 1],
             description='Filter by intems assigned to recipe',
         ),]
-        
-    
+
+
     )
 )
 class BaseRecipeAttrViewSet(mixins.DestroyModelMixin,
@@ -121,7 +121,7 @@ class BaseRecipeAttrViewSet(mixins.DestroyModelMixin,
         """Retrieve the tags for the authenticated user"""
 
         assigned_only = bool(
-            int(self.request.query_params.get('assigned_only',0))
+            int(self.request.query_params.get('assigned_only', 0))
         )
         queryset = self.queryset
         if assigned_only:
